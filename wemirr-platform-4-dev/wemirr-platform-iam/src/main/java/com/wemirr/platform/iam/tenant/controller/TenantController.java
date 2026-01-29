@@ -83,6 +83,7 @@ public class TenantController {
 
     @Operation(summary = "查询可用", description = "查询可用数据源")
     @GetMapping("/databases/active")
+    @SaCheckPermission(value = {"tenant:database:query"})
     public List<DbInstancePageResp> queryActive() {
         return this.dynamicDatasourceService.selectTenantDynamicDatasource();
     }
@@ -106,19 +107,21 @@ public class TenantController {
     @GetMapping("/{id}/setting")
     @AccessLog(module = "租户管理", description = "配置租户")
     @Operation(summary = "配置租户")
-    // @SaCheckPermission(value = {"tenant:setting"})
+    @SaCheckPermission(value = {"tenant:setting"})
     public TenantSettingResp setting(@PathVariable Long id) {
         return tenantService.settingInfo(id);
     }
 
     @GetMapping("/{id}/db-ref")
     @Operation(summary = "租户关联DB")
+    @SaCheckPermission(value = {"tenant:database:query"})
     public TenantDbBindingResp dbRef(@PathVariable Long id) {
         return tenantService.dbRef(id);
     }
 
     @PostMapping("/{id}/db-binding")
     @Operation(summary = "租户关联DB")
+    @SaCheckPermission(value = {"tenant:database:binding"})
     public void dbBinding(@PathVariable Long id, @RequestBody TenantDbBindingSaveReq req) {
         tenantService.dbBinding(id, req);
     }
@@ -126,7 +129,7 @@ public class TenantController {
     @PutMapping("/{id}/setting")
     @AccessLog(module = "租户管理", description = "配置租户")
     @Operation(summary = "配置租户")
-    // @SaCheckPermission(value = {"tenant:setting"})
+    @SaCheckPermission(value = {"tenant:setting"})
     public void setting(@PathVariable Long id, @Validated @RequestBody TenantSettingReq req) {
         tenantService.saveSetting(id, req);
     }

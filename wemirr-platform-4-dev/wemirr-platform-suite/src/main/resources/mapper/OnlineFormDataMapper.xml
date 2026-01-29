@@ -5,6 +5,7 @@
     <select id="pageList" resultType="com.wemirr.platform.suite.online.domain.entity.OnlineFormData">
         select * from t_online_form_data t1
         where t1.deleted = false
+        and t1.tenant_id = #{tenantId}  -- 添加租户隔离
         <if test="req.definitionKey != null and req.definitionKey != ''">
             AND t1.definition_key = #{req.definitionKey}
         </if>

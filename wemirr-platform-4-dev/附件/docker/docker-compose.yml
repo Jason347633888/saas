@@ -1,6 +1,6 @@
 # ============================================================
 # Wemirr Platform Docker Compose
-# 
+#
 # 使用前请先创建网络: docker network create wemirr
 # 启动命令: docker-compose up -d
 # 停止命令: docker-compose down
@@ -121,6 +121,69 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+
+  # ==================== Gateway 服务 ====================
+  # API 网关 - 路由转发、限流熔断、黑白名单过滤
+  gateway:
+    image: wemirr-platform-gateway:latest
+    container_name: wemirr-gateway
+    hostname: gateway
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+      NACOS_HOST: nacos
+      NACOS_PORT: 8848
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "15000:15000"
+    depends_on:
+      nacos:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - wemirr
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:15000/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ==================== Gateway Admin 服务 ====================
+  # 网关管理服务 - 路由规则、黑名单、限流配置管理
+  gateway-admin:
+    image: wemirr-platform-gateway-admin:latest
+    container_name: wemirr-gateway-admin
+    hostname: gateway-admin
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+      NACOS_HOST: nacos
+      NACOS_PORT: 8848
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: v4_dev
+    ports:
+      - "15001:15001"
+    depends_on:
+      nacos:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    networks:
+      - wemirr
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:15001/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
 # ==================== 数据卷 ====================
 volumes:

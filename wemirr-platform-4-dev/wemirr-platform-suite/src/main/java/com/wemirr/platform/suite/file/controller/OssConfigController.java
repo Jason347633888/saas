@@ -29,6 +29,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +54,8 @@ public class OssConfigController {
 
 
     @PostMapping("/page")
+    @AccessLog(title = "存储配置-分页查询")
+    @PreAuthorize("hasAuthority('oss:config:page')")
     @Operation(summary = "分页查询", description = "分页查询存储配置列表")
     public IPage<OssConfigPageResp> page(@RequestBody FileStorageSettingPageReq req) {
         return ossConfigService.pageList(req);
@@ -60,6 +63,7 @@ public class OssConfigController {
 
     @PostMapping("/create")
     @AccessLog(module = "存储配置", description = "新增存储配置")
+    @PreAuthorize("hasAuthority('oss:config:create')")
     @Operation(summary = "新增配置", description = "新增 OSS 存储配置")
     public void create(@Validated @RequestBody OssConfigSaveReq req) {
         ossConfigService.create(req);
@@ -67,6 +71,7 @@ public class OssConfigController {
 
     @PutMapping("/{id}/modify")
     @AccessLog(module = "存储配置", description = "修改存储配置")
+    @PreAuthorize("hasAuthority('oss:config:modify')")
     @Operation(summary = "修改配置", description = "修改 OSS 存储配置")
     public void update(@PathVariable Long id, @Validated @RequestBody OssConfigSaveReq req) {
         ossConfigService.modify(id, req);
@@ -74,6 +79,7 @@ public class OssConfigController {
 
     @DeleteMapping("/{id}")
     @AccessLog(module = "存储配置", description = "删除存储配置")
+    @PreAuthorize("hasAuthority('oss:config:remove')")
     @Operation(summary = "删除配置", description = "删除 OSS 存储配置")
     public void delete(@PathVariable Long id) {
         ossConfigService.delete(id);

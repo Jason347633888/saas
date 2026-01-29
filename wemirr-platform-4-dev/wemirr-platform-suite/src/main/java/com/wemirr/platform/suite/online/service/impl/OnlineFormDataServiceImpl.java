@@ -21,7 +21,10 @@ package com.wemirr.platform.suite.online.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.wemirr.framework.commons.BeanUtilPlus;
+import com.wemirr.framework.commons.exception.CheckedException;
 import com.wemirr.framework.db.mybatisplus.ext.SuperServiceImpl;
+import com.wemirr.framework.security.context.AuthenticationContext;
+import com.wemirr.framework.security.context.AuthenticationContextHolder;
 import com.wemirr.platform.suite.online.domain.entity.OnlineFormData;
 import com.wemirr.platform.suite.online.domain.req.OnlineFormDataSaveReq;
 import com.wemirr.platform.suite.online.domain.req.OnlineFormDesignerPageReq;
@@ -41,11 +44,24 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class OnlineFormDataServiceImpl extends SuperServiceImpl<OnlineFormDataMapper, OnlineFormData> implements OnlineFormDataService {
-    
+
+    /**
+     * 获取当前用户的租户ID
+     */
+    private Long getCurrentTenantId() {
+        AuthenticationContext context = AuthenticationContextHolder.getContext();
+        if (context != null && context.tenantId() != null) {
+            return context.tenantId();
+        }
+        throw CheckedException.unauthorized("用户未登录或租户信息缺失");
+    }
+
     @Override
     public IPage<Map<String, Object>> pageList(OnlineFormDesignerPageReq req) {
-        return this.baseMapper.pageList(req.buildPage(), req).convert(x -> new HashMap<>() {
-            
+        // 添加租户隔离
+        Long tenantId = getCurrentTenantId();
+        return this.baseMapper.pageList(req.buildPage(), req, tenantId).convert(x -> new HashMap<>() {
+
             {
                 put("id", x.getId());
                 put("definitionKey", x.getDefinitionKey());
@@ -56,16 +72,32 @@ public class OnlineFormDataServiceImpl extends SuperServiceImpl<OnlineFormDataMa
             }
         });
     }
-    
+
     @Override
     public void create(OnlineFormDataSaveReq req) {
+        Long tenantId = getCurrentTenantId();
         var bean = BeanUtilPlus.toBean(req, OnlineFormData.class);
+        bean.setTenantId(tenantId);
         this.baseMapper.insert(bean);
     }
-    
+
     @Override
     public void modify(Long id, OnlineFormDataSaveReq req) {
+        // 验证数据属于当前租户
+        getDataByIdWithTenant(id);
         var bean = BeanUtilPlus.toBean(id, req, OnlineFormData.class);
         this.baseMapper.updateById(bean);
+    }
+
+    /**
+     * 根据ID获取数据（带租户隔离）
+     */
+    private OnlineFormData getDataByIdWithTenant(Long id) {
+        Long tenantId = getCurrentTenantId();
+        OnlineFormData data = this.baseMapper.selectById(id);
+        if (data == null || !tenantId.equals(data.getTenantId())) {
+            throw CheckedException.notFound("数据不存在或无权限访问");
+        }
+        return data;
     }
 }

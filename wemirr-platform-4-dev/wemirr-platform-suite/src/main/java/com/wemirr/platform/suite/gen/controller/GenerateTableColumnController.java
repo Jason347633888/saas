@@ -1,6 +1,7 @@
 package com.wemirr.platform.suite.gen.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.wemirr.framework.db.annotation.AccessLog;
 import com.wemirr.platform.suite.gen.domain.dto.req.GenerateTableColumnPageReq;
 import com.wemirr.platform.suite.gen.domain.dto.req.GenerateTableColumnSaveReq;
 import com.wemirr.platform.suite.gen.domain.dto.resp.GenerateTableColumnPageResp;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,8 @@ public class GenerateTableColumnController {
     private final GenerateTableColumnService generateTableColumnService;
 
     @GetMapping("/page")
+    @AccessLog(title = "代码生成列配置-分页查询")
+    @PreAuthorize("hasAuthority('generate:column:page')")
     @Operation(summary = "分页查询")
     public IPage<GenerateTableColumnPageResp> pageList(GenerateTableColumnPageReq req) {
         return generateTableColumnService.pageList(req);
@@ -37,6 +41,8 @@ public class GenerateTableColumnController {
     /**
      * 新增字段
      */
+    @AccessLog(title = "代码生成列配置-新增字段")
+    @PreAuthorize("hasAuthority('generate:column:create')")
     @Operation(summary = "新增字段")
     @PostMapping("/create")
     public void create(@Validated @RequestBody GenerateTableColumnSaveReq req) {
@@ -47,6 +53,8 @@ public class GenerateTableColumnController {
     /**
      * 编辑字段
      */
+    @AccessLog(title = "代码生成列配置-编辑字段")
+    @PreAuthorize("hasAuthority('generate:column:modify')")
     @Operation(summary = "编辑字段")
     @PutMapping("/{id}/modify")
     public void modify(@PathVariable("id") Long id, @Validated @RequestBody GenerateTableColumnSaveReq req) {
@@ -56,6 +64,8 @@ public class GenerateTableColumnController {
     /*
      * 批量更新
      */
+    @AccessLog(title = "代码生成列配置-批量更新")
+    @PreAuthorize("hasAuthority('generate:column:modify')")
     @Operation(summary = "批量更新")
     @PutMapping("/batch/modify")
     public void batchModify(@Validated @RequestBody List<GenerateTableColumnSaveReq> req) {
@@ -66,6 +76,8 @@ public class GenerateTableColumnController {
     /**
      * 字段详情
      */
+    @AccessLog(title = "代码生成列配置-字段详情")
+    @PreAuthorize("hasAuthority('generate:column:detail')")
     @Operation(summary = "字段详情")
     @GetMapping("/{id}/detail")
     public void detail(@PathVariable("id") Long id) {
@@ -76,6 +88,8 @@ public class GenerateTableColumnController {
     /**
      * 删除字段
      */
+    @AccessLog(title = "代码生成列配置-删除字段")
+    @PreAuthorize("hasAuthority('generate:column:remove')")
     @Operation(summary = "删除字段")
     @DeleteMapping("/{id}")
     public void remove(@PathVariable("id") Long id) {

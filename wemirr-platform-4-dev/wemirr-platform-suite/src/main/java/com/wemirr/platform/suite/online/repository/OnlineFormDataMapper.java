@@ -32,7 +32,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface OnlineFormDataMapper extends SuperMapper<OnlineFormData> {
-    
-    IPage<OnlineFormData> pageList(@Param("page") Page<?> page, @Param("req") OnlineFormDesignerPageReq req);
-    
+
+    IPage<OnlineFormData> pageList(@Param("page") Page<?> page,
+                                   @Param("req") OnlineFormDesignerPageReq req,
+                                   @Param("tenantId") Long tenantId);
+
 }

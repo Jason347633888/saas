@@ -1,0 +1,98 @@
+/*
+ * Copyright (c) 2023 WEMIRR-PLATFORM Authors. All Rights Reserved.
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.wemirr.platform.suite.dynamic.field.service;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.wemirr.framework.db.mybatisplus.ext.SuperService;
+import com.wemirr.platform.suite.dynamic.field.domain.dto.req.FieldSaveReq;
+import com.wemirr.platform.suite.dynamic.field.domain.dto.resp.FieldResp;
+import com.wemirr.platform.suite.dynamic.field.domain.entity.DynamicField;
+
+import java.util.List;
+
+/**
+ * 动态字段服务接口
+ *
+ * @author Levin
+ */
+public interface DynamicFieldService extends SuperService<DynamicField> {
+
+    /**
+     * 分页查询字段
+     *
+     * @param pageReq 分页参数
+     * @return 分页结果
+     */
+    IPage<FieldResp> pageList(FieldPageReq pageReq);
+
+    /**
+     * 获取字段详情
+     *
+     * @param id ID
+     * @return 字段详情
+     */
+    FieldResp detail(Long id);
+
+    /**
+     * 创建字段
+     *
+     * @param req 保存请求
+     */
+    void add(FieldSaveReq req);
+
+    /**
+     * 修改字段
+     *
+     * @param id  ID
+     * @param req 保存请求
+     */
+    void edit(Long id, FieldSaveReq req);
+
+    /**
+     * 删除字段
+     *
+     * @param id ID
+     */
+    void delete(Long id);
+
+    /**
+     * 根据模板ID获取字段列表
+     *
+     * @param templateId 模板ID
+     * @return 字段列表
+     */
+    List<FieldResp> getFieldsByTemplateId(Long templateId);
+
+    /**
+     * 批量保存字段
+     *
+     * @param templateId 模板ID
+     * @param fields     字段列表
+     */
+    void batchSave(Long templateId, List<FieldSaveReq> fields);
+
+    /**
+     * 更新字段顺序
+     *
+     * @param id        ID
+     * @param fieldOrder 新顺序
+     */
+    void updateOrder(Long id, Integer fieldOrder);
+}

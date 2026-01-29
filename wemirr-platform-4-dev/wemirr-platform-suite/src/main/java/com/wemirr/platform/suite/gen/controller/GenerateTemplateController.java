@@ -1,6 +1,7 @@
 package com.wemirr.platform.suite.gen.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.wemirr.framework.db.annotation.AccessLog;
 import com.wemirr.platform.suite.gen.domain.dto.req.GenerateTemplatePageReq;
 import com.wemirr.platform.suite.gen.domain.dto.req.GenerateTemplateSaveReq;
 import com.wemirr.platform.suite.gen.domain.dto.resp.GenerateTemplateDetailResp;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,8 @@ public class GenerateTemplateController {
     /**
      * 分页查询模板
      */
+    @AccessLog(title = "代码模板-分页查询")
+    @PreAuthorize("hasAuthority('generate:template:page')")
     @Operation(summary = "分页查询模板")
     @GetMapping("/page")
     public IPage<GenerateTemplatePageResp> pageList(GenerateTemplatePageReq req) {
@@ -42,6 +46,8 @@ public class GenerateTemplateController {
     /**
      * 新增模板
      */
+    @AccessLog(title = "代码模板-新增模板")
+    @PreAuthorize("hasAuthority('generate:template:create')")
     @Operation(summary = "新增模板")
     @PostMapping("/create")
     public void create(@Validated @RequestBody GenerateTemplateSaveReq req) {
@@ -51,6 +57,8 @@ public class GenerateTemplateController {
     /**
      * 编辑模板
      */
+    @AccessLog(title = "代码模板-编辑模板")
+    @PreAuthorize("hasAuthority('generate:template:modify')")
     @Operation(summary = "编辑模板")
     @PutMapping("/{id}/modify")
     public void modify(@PathVariable("id") Long id, @Validated @RequestBody GenerateTemplateSaveReq req) {
@@ -60,6 +68,8 @@ public class GenerateTemplateController {
     /**
      * 模板详情
      */
+    @AccessLog(title = "代码模板-模板详情")
+    @PreAuthorize("hasAuthority('generate:template:detail')")
     @Operation(summary = "模板详情")
     @GetMapping("/{id}/detail")
     public GenerateTemplateDetailResp detail(@PathVariable("id") Long id) {
@@ -69,6 +79,8 @@ public class GenerateTemplateController {
     /**
      * 删除模板
      */
+    @AccessLog(title = "代码模板-删除模板")
+    @PreAuthorize("hasAuthority('generate:template:remove')")
     @Operation(summary = "删除模板")
     @DeleteMapping("/{id}")
     public void remove(@PathVariable("id") Long id) {
@@ -78,6 +90,8 @@ public class GenerateTemplateController {
     /**
      * 查询所有的模板信息
      */
+    @AccessLog(title = "代码模板-获取列表")
+    @PreAuthorize("hasAuthority('generate:template:list')")
     @Operation(summary = "查询所有的模板信息")
     @GetMapping("/list-all")
     public List<GenerateTemplateListResp> listAll() {

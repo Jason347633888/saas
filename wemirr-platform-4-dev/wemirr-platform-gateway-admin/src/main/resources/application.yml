@@ -1,0 +1,71 @@
+server:
+  port: 15001
+
+spring:
+  application:
+    name: wemirr-platform-gateway-admin
+  config:
+    import: optional:nacos:wemirr-platform-gateway-admin.yml
+
+  # Redis 配置
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+
+  # Jackson 配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+
+# Actuator 配置 - 健康检查端点无需认证
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+  health:
+    ldap:
+      enabled: false
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.wemirr: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Sa-Token 配置
+sa-token:
+  token-name: Authorization
+  token-prefix: Bearer
+  timeout: 3600
+  is-read-cookie: false
+  is-read-header: true
+
+# Knife4j 配置
+springdoc:
+  swagger-ui:
+    path: /doc.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  group-configs:
+    - group: default
+      paths-to-match: /**
+      packages-to-scan: com.wemirr.platform.gateway.admin.controller
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn

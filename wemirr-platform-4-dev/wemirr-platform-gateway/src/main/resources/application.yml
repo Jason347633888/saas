@@ -14,10 +14,15 @@ spring:
       - optional:classpath:gateway-route.yaml
   cloud:
     nacos:
-      server-addr: 127.0.0.1:8848
+      server-addr: ${NACOS_HOST:nacos}:${NACOS_PORT:8848}
       discovery:
         server-addr: ${spring.cloud.nacos.server-addr}
         namespace: v4-dev
       config:
         server-addr: ${spring.cloud.nacos.server-addr}
         namespace: v4-dev
+  # Redis 配置 (默认使用环境变量)
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}

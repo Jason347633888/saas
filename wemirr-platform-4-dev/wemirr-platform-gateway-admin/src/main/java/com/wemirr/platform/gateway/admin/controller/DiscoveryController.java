@@ -17,9 +17,13 @@
  * limitations under the License.
  */
 
-package com.wemirr.platform.gateway.rest;
+package com.wemirr.platform.gateway.admin.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.wemirr.framework.commons.annotation.log.AccessLog;
 import com.wemirr.framework.commons.entity.Result;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -34,22 +38,31 @@ import java.util.Map;
 import static java.util.stream.Collectors.toList;
 
 /**
+ * 服务发现控制器
+ *
  * @author Levin
  */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/gateway/discoveries")
+@RequestMapping("/gateway/admin/discoveries")
+@Tag(name = "服务发现管理", description = "服务发现查询")
 public class DiscoveryController {
-    
+
     private final DiscoveryClient discoveryClient;
-    
+
     @GetMapping
-    public List<String> serviceUrl() {
+    @AccessLog(module = "服务发现", description = "查询列表")
+    @SaCheckPermission("gateway:discovery:list")
+    @Operation(summary = "查询所有服务")
+    public List<String> serviceList() {
         return discoveryClient.getServices();
     }
-    
+
     @GetMapping("/dict")
+    @AccessLog(module = "服务发现", description = "查询详情")
+    @SaCheckPermission("gateway:discovery:list")
+    @Operation(summary = "查询服务详情")
     public Result<List<Map<String, Object>>> dict() {
         final List<String> services = discoveryClient.getServices();
         return Result.success(services.stream().map(serviceId -> {
@@ -58,5 +71,4 @@ public class DiscoveryController {
             return object;
         }).collect(toList()));
     }
-    
 }

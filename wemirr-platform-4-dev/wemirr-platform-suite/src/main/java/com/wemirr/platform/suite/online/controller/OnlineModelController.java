@@ -20,6 +20,7 @@
 package com.wemirr.platform.suite.online.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.wemirr.framework.db.annotation.AccessLog;
 import com.wemirr.framework.db.mybatisplus.wrap.Wraps;
 import com.wemirr.platform.suite.online.dialect.FastCrudDialect;
 import com.wemirr.platform.suite.online.domain.entity.OnlineModel;
@@ -33,6 +34,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,36 +56,48 @@ public class OnlineModelController {
 
     @Operation(summary = "分页查询", description = "分页查询")
     @PostMapping("/page")
+    @AccessLog(title = "表单设计-分页查询")
+    @PreAuthorize("hasAuthority('online:model:page')")
     public IPage<OnlineFormDesignerPageResp> pageList(@RequestBody OnlineFormDesignerPageReq req) {
         return onlineModelService.pageList(req);
     }
 
     @PostMapping("/create")
-    @Operation(summary = "新增表单 - [Levin] - [DONE]")
+    @Operation(summary = "新增表单")
+    @AccessLog(title = "表单设计-新增表单")
+    @PreAuthorize("hasAuthority('online:model:create')")
     public void create(@Validated @RequestBody OnlineFormDesignerSaveReq req) {
         this.onlineModelService.create(req);
     }
 
     @GetMapping("/{id}/detail")
-    @Operation(summary = "查看详情 - [Levin] - [DONE]")
+    @Operation(summary = "查看详情")
+    @AccessLog(title = "表单设计-查看详情")
+    @PreAuthorize("hasAuthority('online:model:detail')")
     public OnlineFormDesignerDetailResp detail(@PathVariable Long id) {
         return this.onlineModelService.detail(id);
     }
 
     @PostMapping("/{id}/form-design")
-    @Operation(summary = "表单设计 - [Levin] - [DONE]")
+    @Operation(summary = "表单设计")
+    @AccessLog(title = "表单设计-表单设计")
+    @PreAuthorize("hasAuthority('online:model:form-design')")
     public void formDesign(@PathVariable Long id, @Validated @RequestBody OnlineFormDesignSaveReq req) {
         this.onlineModelService.formDesign(id, req);
     }
 
     @PutMapping("/{id}/modify")
-    @Operation(summary = "修改表单 - [Levin] - [DONE]")
+    @Operation(summary = "修改表单")
+    @AccessLog(title = "表单设计-修改表单")
+    @PreAuthorize("hasAuthority('online:model:modify')")
     public void modify(@PathVariable Long id, @Validated @RequestBody OnlineFormDesignerSaveReq req) {
         this.onlineModelService.modify(id, req);
     }
 
     @GetMapping("/fast-crud")
-    @Operation(summary = "fast-crud模板 - [Levin] - [DONE]")
+    @Operation(summary = "fast-crud模板")
+    @AccessLog(title = "表单设计-fast-crud模板")
+    @PreAuthorize("hasAuthority('online:model:fast-crud')")
     public Map<String, Object> fastCrud(@RequestParam String definitionKey) {
         OnlineModel model = this.onlineModelService.getOne(Wraps.<OnlineModel>lbQ().eq(OnlineModel::getDefinitionKey, definitionKey));
         if (model == null) {
@@ -104,7 +118,9 @@ public class OnlineModelController {
     }
 
     @GetMapping("/detail")
-    @Operation(summary = "模型详情- [Levin] - [DONE]", description = "根据参数获取详情")
+    @Operation(summary = "模型详情", description = "根据参数获取详情")
+    @AccessLog(title = "表单设计-模型详情")
+    @PreAuthorize("hasAuthority('online:model:detail')")
     public OnlineFormDesignerDetailResp detail(@RequestParam String definitionKey) {
         return this.onlineModelService.detail(definitionKey);
     }

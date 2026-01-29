@@ -98,6 +98,14 @@ spring:
               filters:
                 - StripPrefix=1
                 - PreserveHostHeader
+            # Gateway Admin 服务路由（网关管理接口）
+            - id: wemirr-platform-gateway-admin
+              uri: lb://wemirr-platform-gateway-admin
+              predicates:
+                - Path=/gateway/admin/**
+              filters:
+                - StripPrefix=2
+                - PreserveHostHeader
           loadbalancer:
             use404: true
           httpclient:

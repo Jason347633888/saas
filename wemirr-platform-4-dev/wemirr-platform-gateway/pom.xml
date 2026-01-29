@@ -76,6 +76,12 @@
             <groupId>com.github.xingfudeshi</groupId>
             <artifactId>knife4j-gateway-spring-boot-starter</artifactId>
         </dependency>
+
+        <!-- Bootstrap 配置启用 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+        </dependency>
     </dependencies>
     
     <build>

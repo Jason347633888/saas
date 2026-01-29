@@ -63,6 +63,12 @@ public class OnlineModelServiceImpl extends SuperServiceImpl<OnlineModelMapper, 
 
     @Override
     public void create(OnlineFormDesignerSaveReq req) {
+        // 检查 definitionKey 是否已存在
+        long count = this.baseMapper.selectCount(Wraps.<OnlineModel>lbQ()
+                .eq(OnlineModel::getDefinitionKey, req.getDefinitionKey()));
+        if (count > 0) {
+            throw CheckedException.badRequest("定义KEY已存在: {}", req.getDefinitionKey());
+        }
         var bean = BeanUtilPlus.toBean(req, OnlineModel.class);
         this.baseMapper.insert(bean);
 
@@ -70,7 +76,13 @@ public class OnlineModelServiceImpl extends SuperServiceImpl<OnlineModelMapper, 
 
     @Override
     public void modify(Long id, OnlineFormDesignerSaveReq req) {
+        OnlineModel entity = this.baseMapper.selectById(id);
+        if (entity == null) {
+            throw CheckedException.notFound("模型不存在");
+        }
         var bean = BeanUtilPlus.toBean(id, req, OnlineModel.class);
+        // 版本号递增
+        bean.setVersion(entity.getVersion() != null ? entity.getVersion() + 1 : 1);
         this.baseMapper.updateById(bean);
     }
 
@@ -108,7 +120,10 @@ public class OnlineModelServiceImpl extends SuperServiceImpl<OnlineModelMapper, 
         if (fastCrud == null) {
             throw CheckedException.notFound("未解析出 CRUD 模板");
         }
+        // 版本号递增
+        Integer newVersion = model.getVersion() != null ? model.getVersion() + 1 : 1;
         this.baseMapper.updateById(OnlineModel.builder().id(id)
+                .version(newVersion)
                 .formScript(req.getScript())
                 .formSchemas(JacksonUtils.toJson(req.getSchemas()))
                 .formCrudConfig(JacksonUtils.toJson(fastCrud))

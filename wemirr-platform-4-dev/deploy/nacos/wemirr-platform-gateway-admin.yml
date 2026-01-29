@@ -1,0 +1,95 @@
+# Gateway Admin 服务 Nacos 配置
+# 配置ID: wemirr-platform-gateway-admin.yml
+# 格式: YAML
+
+spring:
+  application:
+    name: wemirr-platform-gateway-admin
+
+  # Nacos 服务发现
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_HOST:localhost}:8848
+        namespace: ${NACOS_NAMESPACE:public}
+      # Nacos 配置中心
+      config:
+        server-addr: ${NACOS_HOST:localhost}:8848
+        namespace: ${NACOS_NAMESPACE:public}
+        group: DEFAULT_GROUP
+        file-extension: yml
+
+  # Redis 配置（复用已有的 Redis）
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      timeout: 6000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1ms
+          max-idle: 8
+          min-idle: 0
+
+  # Jackson 配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+
+# 服务端口
+server:
+  port: 15001
+
+# Actuator 监控端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.wemirr: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Sa-Token 配置（关键：需要与 IAM 服务共享 Redis）
+sa-token:
+  token-name: Authorization
+  token-prefix: Bearer
+  timeout: 3600
+  is-read-cookie: false
+  is-read-header: true
+  # 复用 Redis 存储
+  redis:
+    prefix: "login_tokens:"
+
+# Knife4j API 文档配置
+springdoc:
+  swagger-ui:
+    path: /doc.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  group-configs:
+    - group: default
+      paths-to-match: /**
+      packages-to-scan: com.wemirr.platform.gateway.admin.controller
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    swagger-model-name: 实体类列表

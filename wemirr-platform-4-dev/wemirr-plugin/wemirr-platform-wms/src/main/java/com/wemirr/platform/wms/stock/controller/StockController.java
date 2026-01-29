@@ -1,7 +1,9 @@
 package com.wemirr.platform.wms.stock.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.wemirr.framework.commons.BeanUtilPlus;
+import com.wemirr.framework.commons.annotation.log.AccessLog;
 import com.wemirr.framework.db.mybatisplus.wrap.Wraps;
 import com.wemirr.platform.wms.stock.domain.entity.Stock;
 import com.wemirr.platform.wms.stock.domain.req.StockPageReq;
@@ -35,11 +37,15 @@ public class StockController {
 
     @Operation(summary = "查询可用", description = "查询可用数据")
     @PostMapping("/ids")
+    @AccessLog(title = "库存余额-批量查询")
+    @SaCheckPermission(value = {"stock:list"})
     public List<StockPageResp> list(@RequestBody List<Long> ids) {
         return BeanUtilPlus.toBeans(this.stockService.list(Wraps.<Stock>lbQ().in(Stock::getId, ids)), StockPageResp.class);
     }
 
     @PostMapping("/page")
+    @AccessLog(title = "库存余额-分页查询")
+    @SaCheckPermission(value = {"stock:page"})
     @Operation(summary = "分页查询 - [DONE] - [Levin]")
     public IPage<StockPageResp> pageList(@RequestBody StockPageReq req) {
         return this.stockService.page(req.buildPage(), Wraps.<Stock>lbQ()
