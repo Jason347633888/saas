@@ -1,0 +1,8 @@
+# 插件安全配置
+plugin:
+  security:
+    rate-limit:
+      enabled: true
+      register-per-minute: 10
+      unregister-per-minute: 5
+      general-per-minute: 60
